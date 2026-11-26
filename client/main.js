@@ -9,6 +9,7 @@ let currentPlaybackUrls = null;
 let activeCatalog = null;
 let currentMetasCount = 0;
 let roomBridgeKey = localStorage.getItem('stremio_bridge_key') || '';
+let publicOrigin = '';
 
 function proxyImg(url) {
   if (!url) return '';
@@ -529,10 +530,62 @@ $('search-input').addEventListener('input', (e) => {
   }, 350);
 });
 
+function generateRoomKey() {
+  return 'room-' + Math.random().toString(36).slice(2, 8);
+}
+
+function updateBridgeModalPreview() {
+  const key = ($('bridge-key-input').value || '').trim() || 'room-1';
+  const cfg = encodeURIComponent(`room=${key}`);
+  const origin = publicOrigin || window.location.origin;
+  $('modal-manifest-url').textContent = `${origin}/${cfg}/manifest.json`;
+  $('modal-bridge-cmd').textContent = `node bridge.js --room=${key} --server=${origin}`;
+}
+
+function copyWithFeedback(btn, text) {
+  navigator.clipboard?.writeText(text).then(() => {
+    const prev = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = prev; }, 1200);
+  }).catch(() => {});
+}
+
 roomKeyBtn.addEventListener('click', () => {
-  $('bridge-key-input').value = roomBridgeKey;
+  const initialKey = roomBridgeKey || generateRoomKey();
+  $('bridge-key-input').value = initialKey;
+  updateBridgeModalPreview();
   $('bridge-modal').classList.remove('hidden');
   $('bridge-key-input').focus();
+});
+
+$('bridge-key-input').addEventListener('input', updateBridgeModalPreview);
+
+$('gen-bridge-key-btn').addEventListener('click', () => {
+  $('bridge-key-input').value = generateRoomKey();
+  updateBridgeModalPreview();
+});
+
+$('copy-bridge-key-btn').addEventListener('click', () => {
+  copyWithFeedback($('copy-bridge-key-btn'), $('bridge-key-input').value.trim());
+});
+
+$('copy-manifest-url-btn').addEventListener('click', () => {
+  copyWithFeedback($('copy-manifest-url-btn'), $('modal-manifest-url').textContent);
+});
+
+$('copy-bridge-cmd-btn').addEventListener('click', () => {
+  copyWithFeedback($('copy-bridge-cmd-btn'), $('modal-bridge-cmd').textContent);
+});
+
+$('unlink-bridge-btn').addEventListener('click', async () => {
+  roomBridgeKey = '';
+  localStorage.removeItem('stremio_bridge_key');
+  roomKeyBtn.textContent = 'Link Bridge';
+  if (ws && ws.readyState === 1) {
+    ws.send(JSON.stringify({ type: 'attach_bridge', bridgeKey: '' }));
+  }
+  $('bridge-modal').classList.add('hidden');
+  await checkServerStatus();
 });
 
 $('bridge-form').addEventListener('submit', async (e) => {
@@ -552,6 +605,10 @@ $('bridge-form').addEventListener('submit', async (e) => {
 });
 
 async function bootstrap() {
+  try {
+    const cfg = await fetch('/api/config').then((r) => r.json());
+    if (cfg?.publicUrl) publicOrigin = cfg.publicUrl.replace(/\/+$/, '');
+  } catch {}
   try {
     session = await initDiscordSession();
   } catch (err) {

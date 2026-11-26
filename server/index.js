@@ -36,7 +36,8 @@ app.use(express.json());
 // Public config for frontend Discord SDK initialization
 app.get('/api/config', (_req, res) => {
   res.json({
-    clientId: process.env.DISCORD_CLIENT_ID || ''
+    clientId: process.env.DISCORD_CLIENT_ID || '',
+    publicUrl: process.env.PUBLIC_URL || process.env.RENDER_EXTERNAL_URL || ''
   });
 });
 

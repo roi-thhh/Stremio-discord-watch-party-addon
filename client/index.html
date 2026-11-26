@@ -81,16 +81,46 @@
       </div>
     </div>
 
-    <!-- Link Bridge Modal -->
+    <!-- Link Bridge / Host Setup Modal -->
     <div id="bridge-modal" class="modal hidden">
       <div class="modal-backdrop" data-close="bridge-modal"></div>
       <div class="modal-card">
         <button class="modal-close" data-close="bridge-modal">&times;</button>
-        <h2>Link Stremio Bridge</h2>
-        <p class="muted">Enter the Room Key from <code>/configure</code> to share your local Stremio server with everyone in this Discord voice channel.</p>
-        <form id="bridge-form" class="addon-form">
-          <input id="bridge-key-input" type="text" placeholder="e.g. room-abc123 (leave blank to unlink)" />
-          <button type="submit" class="btn btn-primary">Save</button>
+        <h2>Host With Your Own Stremio</h2>
+        <p class="muted">Generate a Room Key below to link your PC's Stremio app to this Discord voice channel.</p>
+
+        <form id="bridge-form">
+          <label class="field-label" for="bridge-key-input">1. Your Room Key</label>
+          <div class="addon-form" style="margin-top:6px">
+            <input id="bridge-key-input" type="text" placeholder="e.g. room-abc123" />
+            <button id="gen-bridge-key-btn" type="button" class="btn btn-secondary">New Key</button>
+            <button id="copy-bridge-key-btn" type="button" class="btn btn-secondary">Copy</button>
+          </div>
+
+          <div class="setup-box">
+            <div class="setup-step">
+              <strong>2. Install Stremio Addon</strong>
+              <p class="muted" style="margin:4px 0 8px">Paste this URL into Stremio's <em>Addons → Community Addons</em> search bar (or open <code>/configure</code>):</p>
+              <div class="copy-row">
+                <code id="modal-manifest-url" class="code-pill"></code>
+                <button id="copy-manifest-url-btn" type="button" class="btn btn-secondary">Copy URL</button>
+              </div>
+            </div>
+
+            <div class="setup-step">
+              <strong>3. Run Local Bridge (for Torrents)</strong>
+              <p class="muted" style="margin:4px 0 8px">Download <a href="/download/bridge.js" target="_blank" rel="noreferrer" style="color:#b8a9ff">bridge.js</a> and run with Stremio open:</p>
+              <div class="copy-row">
+                <code id="modal-bridge-cmd" class="code-pill"></code>
+                <button id="copy-bridge-cmd-btn" type="button" class="btn btn-secondary">Copy Cmd</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button id="unlink-bridge-btn" type="button" class="btn btn-danger">Unlink</button>
+            <button type="submit" class="btn btn-primary">Link to Voice Channel</button>
+          </div>
         </form>
       </div>
     </div>
