@@ -46,11 +46,10 @@ Want to stream torrents or addons from **your own PC's Stremio** to friends in D
 3. Click **Install in Stremio** to add **Discord Watch Party** to your Stremio app.
 
 ### Step 2: Start the Local Stremio Bridge
-Make sure **Stremio** is open on your PC, then download [`bridge.js`](https://stremio-discord-watch-party-addon.onrender.com/download/bridge.js) (requires [Node.js](https://nodejs.org/)) and run:
+Make sure **Stremio** is open on your PC, then run this single command in Command Prompt / Terminal (requires [Node.js 22+](https://nodejs.org/)):
 
 ```bash
-npm install ws
-node bridge.js --room=YOUR_ROOM_KEY --server=https://stremio-discord-watch-party-addon.onrender.com
+curl -sL https://stremio-discord-watch-party-addon.onrender.com/download/bridge.mjs -o bridge.mjs && node bridge.mjs --room=YOUR_ROOM_KEY --server=https://stremio-discord-watch-party-addon.onrender.com
 ```
 
 Keep that terminal window open while hosting.

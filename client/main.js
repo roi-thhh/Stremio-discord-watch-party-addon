@@ -539,7 +539,7 @@ function updateBridgeModalPreview() {
   const cfg = encodeURIComponent(`room=${key}`);
   const origin = publicOrigin || window.location.origin;
   $('modal-manifest-url').textContent = `${origin}/${cfg}/manifest.json`;
-  $('modal-bridge-cmd').textContent = `node bridge.js --room=${key} --server=${origin}`;
+  $('modal-bridge-cmd').textContent = `curl -sL ${origin}/download/bridge.mjs -o bridge.mjs && node bridge.mjs --room=${key} --server=${origin}`;
 }
 
 function copyWithFeedback(btn, text) {

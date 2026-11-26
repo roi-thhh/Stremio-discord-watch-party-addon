@@ -89,7 +89,7 @@ export function createStremioAddonRouter() {
     </div>
 
     <label>2. Connect your local Stremio server (for raw torrents)</label>
-    <p style="margin:4px 0 8px; font-size:0.9rem">Download <a href="/download/bridge.js" style="color:#b8a9ff">bridge.js</a> (needs Node.js + <code>npm i ws</code>) and run while Stremio is open:</p>
+    <p style="margin:4px 0 8px; font-size:0.9rem">Run this single command in Command Prompt / Terminal while Stremio is open (requires Node.js 22+):</p>
     <pre><code id="bridge-cmd"></code></pre>
   </div>
 
@@ -109,7 +109,7 @@ export function createStremioAddonRouter() {
       const manifestStremio = 'stremio://${hostNoProto}/' + cfg + '/manifest.json';
       installLink.href = manifestStremio;
       installLink.dataset.https = manifestHttps;
-      bridgeCmd.textContent = 'node bridge/index.js --room=' + room + ' --server=${origin}';
+      bridgeCmd.textContent = 'curl -sL ${origin}/download/bridge.mjs -o bridge.mjs && node bridge.mjs --room=' + room + ' --server=${origin}';
     }
 
     roomInput.value = randomKey();
@@ -127,8 +127,12 @@ export function createStremioAddonRouter() {
 </html>`);
   });
 
+  router.get('/download/bridge.mjs', (_req, res) => {
+    res.download(path.resolve(__dirname, '../bridge/index.js'), 'bridge.mjs');
+  });
+
   router.get('/download/bridge.js', (_req, res) => {
-    res.download(path.resolve(__dirname, '../bridge/index.js'), 'bridge.js');
+    res.download(path.resolve(__dirname, '../bridge/index.js'), 'bridge.mjs');
   });
 
   router.get('/manifest.json', (req, res) => {

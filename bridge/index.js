@@ -1,6 +1,3 @@
-import 'dotenv/config';
-import WebSocket from 'ws';
-
 const args = Object.fromEntries(
   process.argv.slice(2).map((arg) => {
     const eq = arg.indexOf('=');
@@ -14,8 +11,14 @@ const SERVER_URL = (args.server || process.env.ACTIVITY_SERVER_URL || 'http://lo
 const STREMIO_URL = (args.stremio || process.env.STREMIO_SERVER_URL || 'http://127.0.0.1:11470').replace(/\/+$/, '');
 
 if (!ROOM_KEY) {
-  console.error('Usage: node bridge/index.js --room=<ROOM_KEY> [--server=https://your-activity-url] [--stremio=http://127.0.0.1:11470]');
+  console.error('Usage: node bridge.mjs --room=<ROOM_KEY> [--server=https://your-activity-url] [--stremio=http://127.0.0.1:11470]');
   process.exit(1);
+}
+
+let WebSocketImpl = globalThis.WebSocket;
+if (!WebSocketImpl) {
+  const mod = await import('ws');
+  WebSocketImpl = mod.default;
 }
 
 const wsUrl = SERVER_URL.replace(/^http/, 'ws') + '/bridge-ws';
@@ -33,17 +36,23 @@ async function getStremioVersion() {
 
 function connect() {
   console.log(`Connecting Stremio Bridge (${STREMIO_URL}) -> ${wsUrl} [room: ${ROOM_KEY}]`);
-  const ws = new WebSocket(wsUrl);
+  const ws = new WebSocketImpl(wsUrl);
 
-  ws.on('open', async () => {
+  const onOpen = async () => {
     const stremioVersion = await getStremioVersion();
     ws.send(JSON.stringify({ type: 'register', roomKey: ROOM_KEY, stremioVersion }));
-  });
+  };
 
-  ws.on('message', async (raw) => {
+  const onMessage = async (rawOrEvent) => {
+    const text = typeof rawOrEvent?.data === 'string'
+      ? rawOrEvent.data
+      : Buffer.isBuffer(rawOrEvent)
+        ? rawOrEvent.toString()
+        : String(rawOrEvent?.data || rawOrEvent);
+
     let msg;
     try {
-      msg = JSON.parse(raw.toString());
+      msg = JSON.parse(text);
     } catch {
       return;
     }
@@ -97,16 +106,28 @@ function connect() {
         }
       }
     }
-  });
+  };
 
-  ws.on('close', () => {
+  const onClose = () => {
     console.log('Bridge disconnected. Reconnecting in 3s...');
     setTimeout(connect, 3000);
-  });
+  };
 
-  ws.on('error', (err) => {
-    console.error('Bridge error:', err.message);
-  });
+  const onError = (err) => {
+    console.error('Bridge error:', err?.message || 'connection failed');
+  };
+
+  if (typeof ws.addEventListener === 'function') {
+    ws.addEventListener('open', onOpen);
+    ws.addEventListener('message', onMessage);
+    ws.addEventListener('close', onClose);
+    ws.addEventListener('error', onError);
+  } else {
+    ws.on('open', onOpen);
+    ws.on('message', onMessage);
+    ws.on('close', onClose);
+    ws.on('error', onError);
+  }
 }
 
 connect();
