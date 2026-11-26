@@ -17,13 +17,14 @@ function parseConfig(configParam) {
   }
 }
 
-function buildManifest(config) {
+function buildManifest(config, origin = '') {
   return {
     id: 'community.stremio.discord.activity',
     version: '1.0.0',
     name: 'Discord Watch Party',
     description:
       'Host a synced Discord Activity watch party directly from your Stremio app.',
+    ...(origin ? { logo: `${origin}/icon.jpg` } : {}),
     resources: ['stream'],
     types: ['movie', 'series'],
     idPrefixes: ['tt'],
@@ -130,13 +131,15 @@ export function createStremioAddonRouter() {
     res.download(path.resolve(__dirname, '../bridge/index.js'), 'bridge.js');
   });
 
-  router.get('/manifest.json', (_req, res) => {
-    res.json(buildManifest({ room: 'default' }));
+  router.get('/manifest.json', (req, res) => {
+    const origin = `${req.protocol}://${req.get('host')}`;
+    res.json(buildManifest({ room: 'default' }, origin));
   });
 
   router.get('/:config/manifest.json', (req, res) => {
+    const origin = `${req.protocol}://${req.get('host')}`;
     const config = parseConfig(req.params.config);
-    res.json(buildManifest(config));
+    res.json(buildManifest(config, origin));
   });
 
   router.get('/:config/stream/:type/:id.json', (req, res) => {
