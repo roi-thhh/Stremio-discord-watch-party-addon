@@ -29,6 +29,7 @@ const PORT = Number(process.env.PORT || 3000);
 const isProd = process.env.NODE_ENV === 'production' || process.argv.includes('--prod');
 
 const app = express();
+app.set('trust proxy', 1);
 app.use(cors());
 app.use(express.json());
 

@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: stremio-discord-activity
+    runtime: docker
+    plan: free
+    envVars:
+      - key: DISCORD_CLIENT_ID
+        sync: false
+      - key: DISCORD_CLIENT_SECRET
+        sync: false
