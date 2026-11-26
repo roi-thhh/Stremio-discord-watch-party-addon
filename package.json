@@ -1,0 +1,23 @@
+{
+  "name": "stremio-discord-activity",
+  "version": "1.0.0",
+  "description": "Stremio-powered Discord Activity with Addon support, Torrent/HLS streaming via local Stremio server, and Watch-Together sync",
+  "type": "module",
+  "scripts": {
+    "dev": "node server/index.js",
+    "build": "vite build",
+    "start": "node server/index.js --prod",
+    "bridge": "node bridge/index.js"
+  },
+  "dependencies": {
+    "@discord/embedded-app-sdk": "^1.9.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "hls.js": "^1.5.18",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.11"
+  }
+}

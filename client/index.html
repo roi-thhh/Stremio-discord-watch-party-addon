@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stremio Discord Activity</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo-dot"></div>
+        <span>Stremio Activity</span>
+      </div>
+
+      <div class="search-wrap">
+        <input id="search-input" type="search" placeholder="Search movies & series..." />
+      </div>
+
+      <div class="nav-actions">
+        <span id="server-badge" class="badge badge-warn" title="Local/Bridged Stremio Server Status">Server: Checking...</span>
+        <button id="room-key-btn" class="badge badge-info" style="cursor:pointer" title="Set Room Key from /configure">Room Key</button>
+        <span id="room-badge" class="badge badge-info">Peers: 1</span>
+        <button id="open-addons-btn" class="btn btn-secondary">Addons</button>
+      </div>
+    </header>
+
+    <div id="player-section" class="player-section hidden">
+      <div class="player-bar">
+        <div class="player-title-wrap">
+          <strong id="now-playing-title">Now Playing</strong>
+          <span id="now-playing-sub" class="muted"></span>
+        </div>
+        <div class="player-controls-extra">
+          <label class="toggle-label">
+            <input type="checkbox" id="hls-toggle" checked />
+            <span>HLS Transcode (MKV/HEVC safe)</span>
+          </label>
+          <button id="fullscreen-btn" class="btn btn-secondary" title="Toggle Fullscreen (F)">Fullscreen</button>
+          <button id="close-player-btn" class="btn btn-ghost">Close Player</button>
+        </div>
+      </div>
+      <div class="video-container">
+        <video id="video-player" controls playsinline></video>
+      </div>
+      <div id="sync-status" class="sync-status muted">Watch-Together Sync Active</div>
+    </div>
+
+    <main class="main-content">
+      <div id="catalog-tabs" class="tabs"></div>
+
+      <div id="catalog-grid" class="catalog-grid"></div>
+      <div id="load-more-wrap" class="load-more-wrap hidden">
+        <button id="load-more-btn" class="btn btn-secondary">Load More</button>
+      </div>
+    </main>
+
+    <!-- Media Detail & Streams Modal -->
+    <div id="detail-modal" class="modal hidden">
+      <div class="modal-backdrop" data-close="detail-modal"></div>
+      <div class="modal-card detail-card">
+        <button class="modal-close" data-close="detail-modal">&times;</button>
+        <div id="detail-body"></div>
+      </div>
+    </div>
+
+    <!-- Addons Modal -->
+    <div id="addons-modal" class="modal hidden">
+      <div class="modal-backdrop" data-close="addons-modal"></div>
+      <div class="modal-card">
+        <button class="modal-close" data-close="addons-modal">&times;</button>
+        <h2>Installed Stremio Addons</h2>
+        <p class="muted">Paste any Stremio addon manifest URL (e.g., Torrentio <code>https://torrentio.strem.fun/manifest.json</code> or <code>stremio://...</code>).</p>
+        <form id="install-addon-form" class="addon-form">
+          <input id="addon-url-input" type="text" placeholder="https://.../manifest.json or stremio://..." required />
+          <button type="submit" class="btn btn-primary">Install</button>
+        </form>
+        <div id="addon-error" class="error-text hidden"></div>
+        <div id="addons-list" class="addons-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
