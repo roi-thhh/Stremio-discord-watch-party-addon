@@ -80,6 +80,20 @@
         <div id="addons-list" class="addons-list"></div>
       </div>
     </div>
+
+    <!-- Link Bridge Modal -->
+    <div id="bridge-modal" class="modal hidden">
+      <div class="modal-backdrop" data-close="bridge-modal"></div>
+      <div class="modal-card">
+        <button class="modal-close" data-close="bridge-modal">&times;</button>
+        <h2>Link Stremio Bridge</h2>
+        <p class="muted">Enter the Room Key from <code>/configure</code> to share your local Stremio server with everyone in this Discord voice channel.</p>
+        <form id="bridge-form" class="addon-form">
+          <input id="bridge-key-input" type="text" placeholder="e.g. room-abc123 (leave blank to unlink)" />
+          <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+      </div>
+    </div>
   </div>
 
   <script type="module" src="./main.js"></script>

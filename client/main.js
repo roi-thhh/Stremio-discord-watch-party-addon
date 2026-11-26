@@ -529,10 +529,15 @@ $('search-input').addEventListener('input', (e) => {
   }, 350);
 });
 
-roomKeyBtn.addEventListener('click', async () => {
-  const next = prompt('Enter your Stremio Bridge Key (from /configure) to share your Stremio with this voice channel:', roomBridgeKey);
-  if (next === null) return;
-  roomBridgeKey = next.trim();
+roomKeyBtn.addEventListener('click', () => {
+  $('bridge-key-input').value = roomBridgeKey;
+  $('bridge-modal').classList.remove('hidden');
+  $('bridge-key-input').focus();
+});
+
+$('bridge-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  roomBridgeKey = $('bridge-key-input').value.trim();
   if (roomBridgeKey) {
     localStorage.setItem('stremio_bridge_key', roomBridgeKey);
   } else {
@@ -542,6 +547,7 @@ roomKeyBtn.addEventListener('click', async () => {
   if (ws && ws.readyState === 1) {
     ws.send(JSON.stringify({ type: 'attach_bridge', bridgeKey: roomBridgeKey }));
   }
+  $('bridge-modal').classList.add('hidden');
   await checkServerStatus();
 });
 
